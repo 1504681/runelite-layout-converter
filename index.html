@@ -291,8 +291,30 @@
   }
   .format-hint strong { color: var(--text); }
 
-  /* ── Recommended Setups Page ── */
+  /* ── Starting Setups Page ── */
   #page-setups { padding: 28px 32px 0; }
+
+  .setups-intro {
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+  }
+  .setups-intro-title {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .setups-intro-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
 
   .cat-bar {
     display: flex;
@@ -455,7 +477,7 @@
 
 <nav class="page-nav">
   <button class="page-btn active" id="nav-converter" onclick="showPage('converter')">Converter</button>
-  <button class="page-btn" id="nav-setups" onclick="showPage('setups')">Recommended Setups</button>
+  <button class="page-btn" id="nav-setups" onclick="showPage('setups')">Starting Setups</button>
 </nav>
 
 <!-- ════════════════════ CONVERTER PAGE ════════════════════ -->
@@ -512,6 +534,11 @@
 <!-- ════════════════════ RECOMMENDED SETUPS PAGE ════════════════════ -->
 <div id="page-setups" style="display:none">
 
+  <div class="setups-intro">
+    <div class="setups-intro-title">Starting Setups</div>
+    <div class="setups-intro-desc">New to Inventory Setups? These are some example setups to help you get started. Import any of them directly into the plugin.</div>
+  </div>
+
   <div class="cat-bar" id="cat-bar"></div>
   <div class="setups-grid" id="setups-grid"></div>
 
@@ -519,7 +546,7 @@
 
 <script>
 // ─────────────────────────────────────────────────────────────
-//  Recommended Setups Data
+//  Starting Setups Data
 //  Add new setups by adding entries to this array.
 //  Fields:
 //    name        - Display name
