@@ -671,11 +671,11 @@ function convertBTLToIS(btlStr) {
       afi:  {},
       name: setupName,
       notes: null,
-      hc:   { r: 255, g: 255, b: 0, a: 255 }, // default yellow highlight
-      hd:   null,
+      hc:   "#FF48A4D8", // default teal (matches IS default highlight color)
+      hd:   true,         // highlight difference on
       dc:   null,
-      fb:   null,
-      uh:   null,
+      fb:   true,         // filter bank on
+      uh:   true,         // unordered highlight on
       sb:   null,
       fv:   null,
       iId:  iconId > 0 && iconId !== SPADE_ITEM_ID ? iconId : null,
