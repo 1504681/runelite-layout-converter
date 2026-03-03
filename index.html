@@ -960,44 +960,32 @@ function convertBTLToIS(btlStr) {
 
   if (!tagName) throw new Error('Could not extract tag name from BTL string.');
 
-  // ── Parse layout positions ──────────────────────────────────────
-  // BTL layout grid structure (4 columns wide):
-  //   Positions  0–15  → equipment panel (16 visual slots, sparse)
-  //   Positions 16–43  → inventory (28 slots, maps 1-to-1 to inv[0..27])
-  //   Positions 44+    → additional filtered items (afi)
+  // ── BTL layout grid ─────────────────────────────────────────────
+  // BTL uses an 8-column-wide grid. Equipment and inventory items are placed
+  // together using a zigzag function: even zigzag indices go in the top row of
+  // each pair, odd indices go 8 columns to the right (bottom row of the pair).
+  // The number of equipment items placed before inventory varies per layout, so
+  // we cannot reliably reverse-map BTL layout positions to IS eq/inv slots.
   //
-  // Equipment visual grid → IS equipment slot mapping:
-  //   BTL pos  0 → IS eq[0]  (head)
-  //   BTL pos  1 → IS eq[2]  (neck)
-  //   BTL pos  2 → IS eq[4]  (chest / body)
-  //   BTL pos  3 → IS eq[7]  (legs)
-  //   BTL pos  4 → IS eq[10] (boots)
-  //   BTL pos  5 → IS eq[13] (ammo / quiver)
-  //   BTL pos  8 → IS eq[1]  (cape)
-  //   BTL pos  9 → IS eq[3]  (weapon)
-  //   BTL pos 10 → IS eq[5]  (shield / offhand)
-  //   BTL pos 11 → IS eq[9]  (gloves)
-  //   BTL pos 12 → IS eq[12] (ring)
-  //   (positions 6,7,13,14,15 are unused visual gaps)
-  const BTL_POS_TO_EQ_SLOT = {
-    0:  0,   // head
-    1:  2,   // neck
-    2:  4,   // chest
-    3:  7,   // legs
-    4:  10,  // boots
-    5:  13,  // ammo
-    8:  1,   // cape
-    9:  3,   // weapon
-    10: 5,   // shield
-    11: 9,   // gloves
-    12: 12,  // ring
-  };
+  // Strategy:
+  //   • Pass the BTL layout array through unchanged as the IS layout (positions match).
+  //   • Fill IS inv[] by reading the banktag item list in BTL's visual column-major
+  //     order: col 0 top→bottom, col 1 top→bottom, col 2 top→bottom, col 3 top→bottom.
+  //     This preserves the visual arrangement the user sees in BTL.
+  //   • Items beyond 28 (full inventory) go into afi.
+  //   • eq[] is left empty — IS will show those slots as unset, and the user can
+  //     assign gear manually or use IS's "update from current equipment" feature.
 
-  const INV_START = 16;
-  const INV_END   = 43;  // inclusive
-  const AFI_START = 44;
+  // Col-major fill order for 4×7 IS inventory:
+  // col 0: slots 0,4,8,12,16,20,24 → col 1: slots 1,5,9,13,17,21,25 → …
+  const COL_MAJOR_INV_ORDER = [];
+  for (let col = 0; col < 4; col++) {
+    for (let row = 0; row < 7; row++) {
+      COL_MAJOR_INV_ORDER.push(row * 4 + col);
+    }
+  }
 
-  // btlMap: layoutPosition -> itemId (positive IDs only; layout only stores positive IDs)
+  // ── Parse layout positions (pass-through to IS layout array) ────
   const btlMap = {};
   let maxIndex = -1;
   if (layoutString.length > 0) {
@@ -1012,67 +1000,47 @@ function convertBTLToIS(btlStr) {
     }
   }
 
-  // Rebuild the IS layout array (pass-through — positions are identical)
   const isLayout = new Array(maxIndex + 1).fill(-1);
   for (const [idx, itemId] of Object.entries(btlMap)) isLayout[parseInt(idx, 10)] = itemId;
 
   // ── Parse banktag section ───────────────────────────────────────
   // Format: tagName,iconId,item1,item2,...
-  // Negative item IDs mean "exclude from fuzzy matching" (the abs value is the item ID).
+  // Negative item IDs = fuzzy-match excluded (abs value is the real item ID).
   const bankTagParts = banktagSection.split(',');
   if (bankTagParts.length < 2) throw new Error('Invalid banktag section — too few fields.');
 
   const iconId = parseInt(bankTagParts[1], 10);
 
-  // Build a set of all item IDs mentioned in the tag (absolute values).
-  // Track which ones are fuzzy-excluded (negative in the banktag list).
   const fuzzyExcluded = new Set();
-  const allTagItemIds = new Set();
+  const orderedTagItems = []; // preserves banktag list order for col-major fill
+  const seenIds = new Set();
+
   for (const s of bankTagParts.slice(2)) {
     const n = parseInt(s, 10);
     if (isNaN(n)) continue;
     const absId = Math.abs(n);
     if (absId === 0) continue;
-    allTagItemIds.add(absId);
     if (n < 0) fuzzyExcluded.add(absId);
+    if (!seenIds.has(absId)) {
+      seenIds.add(absId);
+      orderedTagItems.push(absId);
+    }
   }
 
-  // ── Build IS eq, inv, afi from layout positions ─────────────────
+  // ── Fill inv[] col-major, overflow → afi ────────────────────────
   const invSlots = new Array(28).fill(null);
   const eqSlots  = new Array(14).fill(null);
   const afi      = {};
 
-  // Track which item IDs have been placed so we can fall back for banktag-only items
-  const placedIds = new Set();
-
-  for (const [idxStr, itemId] of Object.entries(btlMap)) {
-    const pos   = parseInt(idxStr, 10);
-    const absId = Math.abs(itemId);
-    // Note: layout stores positive IDs only; fuzzy status comes from banktag section
+  let fillPos = 0;
+  for (const absId of orderedTagItems) {
     const isFuzzy = fuzzyExcluded.has(absId);
     const entry   = isFuzzy ? { id: absId, f: true } : { id: absId };
-
-    if (pos in BTL_POS_TO_EQ_SLOT) {
-      eqSlots[BTL_POS_TO_EQ_SLOT[pos]] = entry;
-      placedIds.add(absId);
-    } else if (pos >= INV_START && pos <= INV_END) {
-      invSlots[pos - INV_START] = entry;
-      placedIds.add(absId);
-    } else if (pos >= AFI_START) {
+    if (fillPos < 28) {
+      invSlots[COL_MAJOR_INV_ORDER[fillPos]] = entry;
+      fillPos++;
+    } else {
       afi[String(absId)] = entry;
-      placedIds.add(absId);
-    }
-    // positions 6,7,13,14,15 are unused equipment grid gaps — ignore
-  }
-
-  // Any items in the banktag section that weren't placed by the layout
-  // (e.g. tag was created without full layout data) go into afi as a fallback.
-  let unplacedCount = 0;
-  for (const absId of allTagItemIds) {
-    if (!placedIds.has(absId) && !(String(absId) in afi)) {
-      const isFuzzy = fuzzyExcluded.has(absId);
-      afi[String(absId)] = isFuzzy ? { id: absId, f: true } : { id: absId };
-      unplacedCount++;
     }
   }
 
@@ -1090,19 +1058,17 @@ function convertBTLToIS(btlStr) {
     layout: isLayout,
   };
 
-  const eqCount  = eqSlots.filter(Boolean).length;
   const invCount = invSlots.filter(Boolean).length;
   const afiCount = Object.keys(afi).length;
 
   const details = [
-    { label: 'Tag Name',       value: tagName,                                        cls: 'accent2'  },
-    { label: 'Equipment Slots',value: `${eqCount} item(s) placed`,                    cls: 'success'  },
-    { label: 'Inventory Slots',value: `${invCount} item(s) placed`,                   cls: 'success'  },
-    { label: 'Addl. Filtered', value: `${afiCount} item(s) in afi`,                   cls: 'success'  },
-    { label: 'Fuzzy-Excluded', value: `${fuzzyExcluded.size} item(s) marked f:true`,                  },
-    { label: 'Layout Size',    value: `${isLayout.length} slots`,                                      },
-    { label: 'Icon Item ID',   value: String(iconId)                                                   },
-    ...(unplacedCount > 0 ? [{ label: 'Unplaced (→ afi)', value: `${unplacedCount} item(s) had no layout position`, cls: 'accent' }] : []),
+    { label: 'Tag Name',       value: tagName,                                        cls: 'accent2' },
+    { label: 'Inventory Slots',value: `${invCount} item(s) placed (col-major order)`, cls: 'success' },
+    { label: 'Addl. Filtered', value: `${afiCount} item(s) in afi (overflow)`,        cls: 'success' },
+    { label: 'Fuzzy-Excluded', value: `${fuzzyExcluded.size} item(s) marked f:true`,                 },
+    { label: 'Layout Slots',   value: `${Object.keys(btlMap).length} positions carried over`         },
+    { label: 'Icon Item ID',   value: String(iconId)                                                  },
+    { label: 'Note',           value: 'Equipment slots left empty — assign gear in IS or use "Update from current equipment"', cls: 'accent' },
   ];
 
   return { output: JSON.stringify(isPortable), details };
