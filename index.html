@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RuneLite Layout Converter</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+
+  :root {
+    --bg:        #0d0f14;
+    --surface:   #13161e;
+    --raised:    #1a1e29;
+    --border:    #252a38;
+    --accent:    #c8a94a;
+    --accent2:   #4a8bc8;
+    --success:   #4ac87a;
+    --danger:    #c84a4a;
+    --text:      #d4c9a8;
+    --muted:     #6b7280;
+    --mono:      'Share Tech Mono', monospace;
+    --sans:      'Rajdhani', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    min-height: 100vh;
+    padding: 0 0 60px 0;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo {
+    width: 36px; height: 36px;
+    background: #5bb8d4;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  header h1 {
+    font-family: var(--sans);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  header p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Mode selector ── */
+  .mode-bar {
+    display: flex;
+    gap: 0;
+    margin: 28px 32px 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    max-width: 640px;
+  }
+  .mode-btn {
+    flex: 1;
+    background: var(--surface);
+    border: none;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 12px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    border-right: 1px solid var(--border);
+  }
+  .mode-btn:last-child { border-right: none; }
+  .mode-btn.active {
+    background: var(--raised);
+    color: var(--accent);
+  }
+  .mode-btn:hover:not(.active) { color: var(--text); }
+
+  /* ── Main layout ── */
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr 56px 1fr;
+    gap: 0;
+    margin: 24px 32px 0;
+    align-items: start;
+  }
+
+  /* ── Panel ── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .panel-header {
+    background: var(--raised);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .panel-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .badge-is  { background: #2a1f08; color: var(--accent);  border: 1px solid #4a360f; }
+  .badge-btl { background: #0d1f2a; color: var(--accent2); border: 1px solid #0f3050; }
+  .panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  textarea {
+    width: 100%;
+    height: 280px;
+    background: var(--bg);
+    border: none;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.6;
+    padding: 14px;
+    resize: vertical;
+    outline: none;
+    display: block;
+  }
+  textarea::placeholder { color: var(--muted); opacity: 0.6; }
+  textarea:focus { background: #0f1118; }
+
+  .panel-footer {
+    border-top: 1px solid var(--border);
+    padding: 10px 14px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 3px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-primary { background: var(--accent); color: #111; }
+  .btn-secondary { background: var(--raised); color: var(--text); border: 1px solid var(--border); }
+  .btn-copy { background: var(--raised); color: var(--accent2); border: 1px solid #1a3a55; }
+  .btn-copy.copied { color: var(--success); border-color: #1a3d2a; }
+
+  /* ── Arrow / convert button ── */
+  .arrow-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 60px;
+    gap: 10px;
+  }
+  .convert-btn {
+    width: 44px; height: 44px;
+    background: var(--raised);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    color: var(--accent);
+    font-size: 18px;
+  }
+  .convert-btn:hover { border-color: var(--accent); background: #1e2130; }
+
+  /* ── Status / info area ── */
+  .status-bar {
+    margin: 16px 32px 0;
+    min-height: 48px;
+  }
+  .status-msg {
+    display: none;
+    padding: 12px 16px;
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.6;
+    border-left: 3px solid;
+  }
+  .status-msg.show { display: block; }
+  .status-msg.success { background: #0d1f14; border-color: var(--success); color: var(--success); }
+  .status-msg.error   { background: #1f0d0d; border-color: var(--danger);  color: var(--danger);  }
+  .status-msg.info    { background: #0d1525; border-color: var(--accent2); color: var(--accent2); }
+
+  /* ── Details panel ── */
+  .details {
+    margin: 16px 32px 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    display: none;
+  }
+  .details.show { display: block; }
+  .details-header {
+    background: var(--raised);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0;
+  }
+  .detail-item {
+    padding: 12px 16px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .detail-value {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+  }
+  .detail-value.accent  { color: var(--accent); }
+  .detail-value.accent2 { color: var(--accent2); }
+  .detail-value.success { color: var(--success); }
+
+  /* ── Format hint ── */
+  .format-hint {
+    margin: 16px 32px 0;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-family: var(--mono);
+  }
+  .format-hint strong { color: var(--text); }
+
+  /* ── Responsive ── */
+  @media (max-width: 800px) {
+    .panels { grid-template-columns: 1fr; }
+    .arrow-col { flex-direction: row; padding-top: 0; padding: 12px 0; }
+    header, .mode-bar, .status-bar, .details, .format-hint { margin-left: 16px; margin-right: 16px; }
+    .panels { margin-left: 16px; margin-right: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🐸</div>
+  <div>
+    <h1>Layout Converter</h1>
+    <p>Inventory Setups &nbsp;↔&nbsp; Bank Tag Layouts</p>
+  </div>
+</header>
+
+<div class="mode-bar">
+  <button class="mode-btn active" id="btn-btl-to-is" onclick="setMode('btl-to-is')">Bank Tag Layouts → Inventory Setups</button>
+  <button class="mode-btn" id="btn-is-to-btl" onclick="setMode('is-to-btl')">Inventory Setups → Bank Tag Layouts</button>
+</div>
+
+<div class="format-hint" id="format-hint"></div>
+
+<div class="panels">
+  <div class="panel" id="panel-input">
+    <div class="panel-header">
+      <span class="panel-badge" id="badge-input">Inventory Setups</span>
+      <span class="panel-title" id="label-input">Inventory Setups Export (JSON)</span>
+    </div>
+    <textarea id="input-text" spellcheck="false" placeholder="Paste your exported data here..."></textarea>
+    <div class="panel-footer">
+      <button class="btn btn-secondary" onclick="document.getElementById('input-text').value=''; clearOutput()">Clear</button>
+      <button class="btn btn-secondary" onclick="pasteFromClipboard()">Paste</button>
+      <button class="btn btn-primary" onclick="convert()">Convert</button>
+    </div>
+  </div>
+
+  <div class="arrow-col">
+    <button class="convert-btn" onclick="convert()" title="Convert">⇄</button>
+  </div>
+
+  <div class="panel" id="panel-output">
+    <div class="panel-header">
+      <span class="panel-badge" id="badge-output">Bank Tag Layouts</span>
+      <span class="panel-title" id="label-output">Bank Tag Layouts Import String</span>
+    </div>
+    <textarea id="output-text" spellcheck="false" readonly placeholder="Output will appear here..."></textarea>
+    <div class="panel-footer">
+      <button class="btn btn-copy" id="copy-btn" onclick="copyOutput()">Copy Output</button>
+    </div>
+  </div>
+</div>
+
+<div class="status-bar">
+  <div class="status-msg" id="status-msg"></div>
+</div>
+
+<div class="details" id="details-panel">
+  <div class="details-header">Parsed Details</div>
+  <div class="details-grid" id="details-grid"></div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+//  Constants (mirrored from source)
+// ─────────────────────────────────────────────────────────────
+const BTL_PREFIX       = 'banktaglayoutsplugin:';
+const SPADE_ITEM_ID    = 952; // ItemID.SPADE from OSRS
+const WEAPON_SLOT_IDX  = 3;   // EquipmentInventorySlot.WEAPON.getSlotIdx()
+
+// ─────────────────────────────────────────────────────────────
+//  Mode state
+// ─────────────────────────────────────────────────────────────
+let currentMode = 'is-to-btl';
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('btn-is-to-btl').classList.toggle('active', mode === 'is-to-btl');
+  document.getElementById('btn-btl-to-is').classList.toggle('active', mode === 'btl-to-is');
+
+  if (mode === 'is-to-btl') {
+    document.getElementById('badge-input').textContent  = 'Inventory Setups';
+    document.getElementById('badge-input').className    = 'panel-badge badge-is';
+    document.getElementById('label-input').textContent  = 'Inventory Setups Export (JSON)';
+    document.getElementById('badge-output').textContent = 'Bank Tag Layouts';
+    document.getElementById('badge-output').className   = 'panel-badge badge-btl';
+    document.getElementById('label-output').textContent = 'Bank Tag Layouts Import String';
+    document.getElementById('format-hint').innerHTML =
+      '<strong>Input:</strong> Paste the JSON copied from Inventory Setups "Export" button.<br>' +
+      '<strong>Output:</strong> A <code>banktaglayoutsplugin:...</code> string, importable via Bank Tag Layouts "Import tag tab with layout".';
+  } else {
+    document.getElementById('badge-input').textContent  = 'Bank Tag Layouts';
+    document.getElementById('badge-input').className    = 'panel-badge badge-btl';
+    document.getElementById('label-input').textContent  = 'Bank Tag Layouts Export String';
+    document.getElementById('badge-output').textContent = 'Inventory Setups';
+    document.getElementById('badge-output').className   = 'panel-badge badge-is';
+    document.getElementById('label-output').textContent = 'Inventory Setups Import String (JSON)';
+    document.getElementById('format-hint').innerHTML =
+      '<strong>Input:</strong> Paste the <code>banktaglayoutsplugin:...</code> string from Bank Tag Layouts "Export tag tab with layout".<br>' +
+      '<strong>Output:</strong> A JSON string, importable via Inventory Setups "Import setup...".';
+  }
+
+  clearOutput();
+}
+
+function clearOutput() {
+  document.getElementById('output-text').value = '';
+  document.getElementById('status-msg').className = 'status-msg';
+  document.getElementById('details-panel').classList.remove('show');
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Clipboard helpers
+// ─────────────────────────────────────────────────────────────
+async function pasteFromClipboard() {
+  // Try modern API first (works on HTTPS / localhost)
+  if (navigator.clipboard && navigator.clipboard.readText) {
+    try {
+      const text = await navigator.clipboard.readText();
+      document.getElementById('input-text').value = text;
+      return;
+    } catch (e) {
+      // Fall through to manual prompt
+    }
+  }
+  // file:// fallback — clipboard read is blocked by browsers on local files,
+  // so just focus the textarea and let the user Ctrl+V directly
+  const ta = document.getElementById('input-text');
+  ta.focus();
+  showStatus('Clipboard read is blocked on local files — press Ctrl+V to paste.', 'info');
+}
+
+function copyOutput() {
+  const val = document.getElementById('output-text').value;
+  if (!val) return;
+
+  const btn = document.getElementById('copy-btn');
+
+  const markCopied = () => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy Output'; btn.classList.remove('copied'); }, 2000);
+  };
+
+  // Modern API (HTTPS / localhost)
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(val).then(markCopied).catch(() => fallbackCopy(val, markCopied));
+  } else {
+    fallbackCopy(val, markCopied);
+  }
+}
+
+function fallbackCopy(text, onSuccess) {
+  // Select the output textarea and execCommand — works on file:// in all browsers
+  const ta = document.getElementById('output-text');
+  ta.removeAttribute('readonly');
+  ta.select();
+  ta.setSelectionRange(0, ta.value.length);
+  try {
+    const ok = document.execCommand('copy');
+    if (ok) { onSuccess(); }
+    else { showStatus('Copy failed — select the output text and press Ctrl+C.', 'error'); }
+  } catch (e) {
+    showStatus('Copy failed — select the output text and press Ctrl+C.', 'error');
+  }
+  ta.setAttribute('readonly', '');
+  window.getSelection()?.removeAllRanges();
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Status / details helpers
+// ─────────────────────────────────────────────────────────────
+function showStatus(msg, type = 'info') {
+  const el = document.getElementById('status-msg');
+  el.textContent = msg;
+  el.className = `status-msg show ${type}`;
+}
+
+function showDetails(fields) {
+  const grid = document.getElementById('details-grid');
+  grid.innerHTML = fields.map(f =>
+    `<div class="detail-item">
+       <div class="detail-label">${f.label}</div>
+       <div class="detail-value ${f.cls || ''}">${f.value}</div>
+     </div>`
+  ).join('');
+  document.getElementById('details-panel').classList.add('show');
+}
+
+// ─────────────────────────────────────────────────────────────
+//  IS → BTL conversion
+// ─────────────────────────────────────────────────────────────
+function convertISToBTL(jsonStr) {
+  // Parse the portable JSON
+  let portable;
+  try {
+    portable = JSON.parse(jsonStr.trim());
+  } catch(e) {
+    throw new Error('Invalid JSON — could not parse Inventory Setup export data.');
+  }
+
+  if (!portable.setup) throw new Error('Missing "setup" field — is this an Inventory Setup export?');
+  if (!portable.layout) throw new Error('Missing "layout" array — setup has no layout data.');
+
+  const setup  = portable.setup;
+  const layout = portable.layout; // int[] — index = bank slot, value = itemId (-1 = empty)
+
+  const setupName = setup.name;
+  if (!setupName) throw new Error('Setup is missing a name.');
+
+  // ── Convert int[] layout to BTL "itemId:index" CSV ──
+  // IS layout: dense array, layout[bankSlot] = itemId (-1 = empty)
+  // BTL layout: sparse, "itemId:bankSlot,itemId:bankSlot,..."
+  const btlLayoutParts = [];
+  for (let i = 0; i < layout.length; i++) {
+    if (layout[i] !== -1) {
+      btlLayoutParts.push(`${layout[i]}:${i}`);
+    }
+  }
+  const btlLayoutString = btlLayoutParts.join(',');
+
+  // ── Collect all unique item IDs for the bank tag ──
+  // We need every item that appears in inv, eq, rp, bp, qv, afi
+  const tagItemIds = new Set();
+
+  const collectItems = (list) => {
+    if (!list) return;
+    for (const item of list) {
+      if (item && item.id > 0) tagItemIds.add(item.id);
+    }
+  };
+
+  collectItems(setup.inv);
+  collectItems(setup.eq);
+  collectItems(setup.rp);
+  collectItems(setup.bp);
+  collectItems(setup.qv);
+  if (setup.afi) {
+    for (const key of Object.keys(setup.afi)) {
+      const item = setup.afi[key];
+      if (item && item.id > 0) tagItemIds.add(item.id);
+    }
+  }
+
+  // ── Determine the icon item ID ──
+  // Priority: iId (custom icon) → weapon slot item → SPADE fallback
+  let iconId = setup.iId && setup.iId > 0 ? setup.iId : -1;
+  if (iconId <= 0 && setup.eq && setup.eq[WEAPON_SLOT_IDX]) {
+    iconId = setup.eq[WEAPON_SLOT_IDX].id || -1;
+  }
+  if (iconId <= 0) iconId = SPADE_ITEM_ID;
+
+  // ── Standardize the tag name (mirrors Text.standardize in RuneLite) ──
+  // RuneLite's Text.standardize: lowercase, strip leading/trailing whitespace
+  const tagName = setupName.trim().toLowerCase();
+
+  // ── Build the BTL export string ──
+  // Format: banktaglayoutsplugin:<tagName>,<itemId:index,...>,banktag:<tagName>,<icon>,<item1>,<item2>,...
+  let exportStr = BTL_PREFIX + tagName;
+  if (btlLayoutString.length > 0) {
+    exportStr += ',' + btlLayoutString;
+  }
+
+  // banktag section: tagName, icon, then all item IDs (comma separated via toCSV)
+  // Text.toCSV in RuneLite just joins with commas (no quoting needed for item IDs)
+  const tagItems = Array.from(tagItemIds);
+  const bankTagParts = [tagName, String(iconId), ...tagItems.map(String)];
+  exportStr += ',banktag:' + bankTagParts.join(',');
+
+  // ── Build details ──
+  const details = [
+    { label: 'Setup Name',    value: setupName,                  cls: 'accent'  },
+    { label: 'Tag Name',      value: tagName,                    cls: 'accent2' },
+    { label: 'Layout Slots',  value: btlLayoutParts.length + ' items positioned', cls: 'success' },
+    { label: 'Tag Items',     value: tagItems.length + ' unique items'           },
+    { label: 'Icon Item ID',  value: String(iconId)                              },
+    { label: 'Has Rune Pouch',value: setup.rp ? 'Yes' : 'No'                    },
+    { label: 'Has Bolt Pouch',value: setup.bp ? 'Yes' : 'No'                    },
+    { label: 'Has Quiver',    value: setup.qv ? 'Yes' : 'No'                    },
+    { label: 'Addl. Items',   value: setup.afi ? Object.keys(setup.afi).length + ' items' : '0' },
+  ];
+
+  return { output: exportStr, details };
+}
+
+// ─────────────────────────────────────────────────────────────
+//  BTL → IS conversion
+// ─────────────────────────────────────────────────────────────
+function convertBTLToIS(btlStr) {
+  const trimmed = btlStr.trim();
+
+  if (!trimmed.startsWith(BTL_PREFIX)) {
+    throw new Error(`Invalid BTL format — string must start with "${BTL_PREFIX}"`);
+  }
+
+  // Split on ",banktag:" to separate layout section from bank tag section
+  const banktag_sep_idx = trimmed.indexOf(',banktag:');
+  if (banktag_sep_idx === -1) {
+    throw new Error('Invalid BTL format — missing ",banktag:" separator. Did you copy the full string?');
+  }
+
+  const layoutSection  = trimmed.substring(BTL_PREFIX.length, banktag_sep_idx);
+  const banktagSection = trimmed.substring(banktag_sep_idx + ',banktag:'.length);
+
+  // Parse the name and layout from the layout section
+  // layoutSection = "tagName,itemId:index,itemId:index,..."
+  const firstComma = layoutSection.indexOf(',');
+  let tagName, layoutString;
+  if (firstComma === -1) {
+    tagName     = layoutSection;
+    layoutString = '';
+  } else {
+    tagName      = layoutSection.substring(0, firstComma);
+    layoutString = layoutSection.substring(firstComma + 1);
+  }
+
+  if (!tagName) throw new Error('Could not extract tag name from BTL string.');
+
+  // Parse BTL layout: "itemId:index,..." → Map<index, itemId>
+  const btlMap = {};
+  let maxIndex = -1;
+  if (layoutString.length > 0) {
+    for (const pair of layoutString.split(',')) {
+      const parts = pair.split(':');
+      if (parts.length !== 2) throw new Error(`Invalid layout pair: "${pair}"`);
+      const itemId = parseInt(parts[0], 10);
+      const index  = parseInt(parts[1], 10);
+      if (isNaN(itemId) || isNaN(index)) throw new Error(`Non-numeric value in layout pair: "${pair}"`);
+      btlMap[index] = itemId;
+      if (index > maxIndex) maxIndex = index;
+    }
+  }
+
+  // Build IS int[] layout from the BTL map
+  // IS layout is a dense array: layout[bankSlot] = itemId, -1 = empty
+  const isLayout = new Array(maxIndex + 1).fill(-1);
+  for (const [idx, itemId] of Object.entries(btlMap)) {
+    isLayout[parseInt(idx, 10)] = itemId;
+  }
+
+  // Parse the bank tag section: "tagName,icon,item1,item2,..."
+  const bankTagParts = banktagSection.split(',');
+  if (bankTagParts.length < 2) throw new Error('Invalid banktag section — too few fields.');
+
+  const bankTagName  = bankTagParts[0]; // skip, we use tagName from layout section
+  const iconIdStr    = bankTagParts[1];
+  const iconId       = parseInt(iconIdStr, 10);
+  const tagItemIds   = bankTagParts.slice(2).map(s => parseInt(s, 10)).filter(n => !isNaN(n) && n > 0);
+
+  // ── Reconstruct the InventorySetupSerializable from item IDs ──
+  // We don't have slot-assignment info from BTL (it only knows IDs, not which slot each goes in).
+  // Best we can do: fill inv from the non-layout-positioned items, leave eq/rp/etc. as empty.
+  // The layout positions carry over exactly, which is the key data.
+  //
+  // Build a minimal valid setup so IS can import it.
+  // IS requires: name, inv (28 slots), eq (14 slots), afi ({})
+  const DUMMY = null; // IS uses null for empty serializable items
+
+  // Create 28 inv slots and 14 eq slots (all null = empty)
+  const invSlots = new Array(28).fill(DUMMY);
+  const eqSlots  = new Array(14).fill(DUMMY);
+
+  // Fill inv slots with tag items in order (up to 28), skipping items already in layout
+  // This gives IS enough to reconstruct item names from the ItemManager
+  let invIdx = 0;
+  for (const itemId of tagItemIds) {
+    if (invIdx >= 28) break;
+    invSlots[invIdx++] = { id: itemId };
+  }
+
+  // Reconstruct the setup name: BTL stores lowercased names — preserve as-is
+  // IS will use this as-is on import
+  const setupName = tagName;
+
+  const isPortable = {
+    setup: {
+      inv:  invSlots,
+      eq:   eqSlots,
+      rp:   null,
+      bp:   null,
+      qv:   null,
+      afi:  {},
+      name: setupName,
+      notes: null,
+      hc:   { r: 255, g: 255, b: 0, a: 255 }, // default yellow highlight
+      hd:   null,
+      dc:   null,
+      fb:   null,
+      uh:   null,
+      sb:   null,
+      fv:   null,
+      iId:  iconId > 0 && iconId !== SPADE_ITEM_ID ? iconId : null,
+    },
+    layout: isLayout,
+  };
+
+  const details = [
+    { label: 'Tag Name',      value: tagName,                     cls: 'accent2' },
+    { label: 'Layout Slots',  value: Object.keys(btlMap).length + ' items positioned', cls: 'success' },
+    { label: 'Tag Items',     value: tagItemIds.length + ' items in tag'               },
+    { label: 'IS Layout Size',value: isLayout.length + ' slots (dense array)'          },
+    { label: 'Icon Item ID',  value: String(iconId)                                    },
+    { label: 'Note',          value: 'Slot assignments reconstructed from layout positions', cls: 'accent' },
+  ];
+
+  // Must be compact JSON (no newlines) — IS imports via JOptionPane.showInputDialog
+  // which uses a JTextField that truncates pasted text at the first newline character.
+  return { output: JSON.stringify(isPortable), details };
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Main convert dispatcher
+// ─────────────────────────────────────────────────────────────
+function convert() {
+  const input = document.getElementById('input-text').value.trim();
+  if (!input) {
+    showStatus('No input — paste your export data first.', 'error');
+    return;
+  }
+
+  try {
+    let result;
+    if (currentMode === 'is-to-btl') {
+      result = convertISToBTL(input);
+    } else {
+      result = convertBTLToIS(input);
+    }
+
+    document.getElementById('output-text').value = result.output;
+    showStatus('Conversion successful.', 'success');
+    showDetails(result.details);
+  } catch(e) {
+    showStatus('Error: ' + e.message, 'error');
+    document.getElementById('details-panel').classList.remove('show');
+  }
+}
+
+// Init
+setMode('btl-to-is');
+</script>
+</body>
+</html>
