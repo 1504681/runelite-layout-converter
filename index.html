@@ -64,6 +64,33 @@
     letter-spacing: 0.04em;
   }
 
+  /* ── Page Nav ── */
+  .page-nav {
+    display: flex;
+    gap: 0;
+    margin: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    padding: 0 32px;
+  }
+  .page-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 14px 20px 12px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+    margin-bottom: -1px;
+  }
+  .page-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .page-btn:hover:not(.active) { color: var(--text); }
+
   /* ── Mode selector ── */
   .mode-bar {
     display: flex;
@@ -90,10 +117,7 @@
     border-right: 1px solid var(--border);
   }
   .mode-btn:last-child { border-right: none; }
-  .mode-btn.active {
-    background: var(--raised);
-    color: var(--accent);
-  }
+  .mode-btn.active { background: var(--raised); color: var(--accent); }
   .mode-btn:hover:not(.active) { color: var(--text); }
 
   /* ── Main layout ── */
@@ -178,7 +202,7 @@
   }
   .btn:active { transform: scale(0.97); }
   .btn:disabled { opacity: 0.35; cursor: not-allowed; }
-  .btn-primary { background: var(--accent); color: #111; }
+  .btn-primary   { background: var(--accent); color: #111; }
   .btn-secondary { background: var(--raised); color: var(--text); border: 1px solid var(--border); }
   .btn-copy { background: var(--raised); color: var(--accent2); border: 1px solid #1a3a55; }
   .btn-copy.copied { color: var(--success); border-color: #1a3d2a; }
@@ -206,10 +230,7 @@
   .convert-btn:hover { border-color: var(--accent); background: #1e2130; }
 
   /* ── Status / info area ── */
-  .status-bar {
-    margin: 16px 32px 0;
-    min-height: 48px;
-  }
+  .status-bar { margin: 16px 32px 0; min-height: 48px; }
   .status-msg {
     display: none;
     padding: 12px 16px;
@@ -249,23 +270,9 @@
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 0;
   }
-  .detail-item {
-    padding: 12px 16px;
-    border-right: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-  .detail-label {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-  .detail-value {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--text);
-  }
+  .detail-item { padding: 12px 16px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .detail-label { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+  .detail-value { font-family: var(--mono); font-size: 13px; color: var(--text); }
   .detail-value.accent  { color: var(--accent); }
   .detail-value.accent2 { color: var(--accent2); }
   .detail-value.success { color: var(--success); }
@@ -284,12 +291,155 @@
   }
   .format-hint strong { color: var(--text); }
 
+  /* ── Recommended Setups Page ── */
+  #page-setups { padding: 28px 32px 0; }
+
+  .cat-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .cat-btn {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .cat-btn:hover:not(.active) { color: var(--text); border-color: #3a4055; }
+  .cat-btn.active { background: var(--raised); color: var(--accent); border-color: var(--accent); }
+
+  .setups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .setup-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .setup-card:hover { border-color: #3a4055; }
+
+  .setup-card-header {
+    padding: 14px 16px 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .setup-card-info { flex: 1; min-width: 0; }
+  .setup-card-name {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .setup-card-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .cat-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .cat-General { background: #1a2010; color: #7ac84a; border: 1px solid #2d4020; }
+  .cat-Bossing { background: #1f0d0d; color: #c84a4a; border: 1px solid #3f1515; }
+  .cat-Skilling { background: #0d1f25; color: #4ac8c8; border: 1px solid #103535; }
+  .cat-Slayer  { background: #1a1020; color: #a84ac8; border: 1px solid #301540; }
+  .cat-Raiding { background: #0d1525; color: #4a8bc8; border: 1px solid #0f3050; }
+  .cat-PvP     { background: #1f1500; color: #c8a94a; border: 1px solid #3f2a00; }
+
+  .setup-card-footer {
+    border-top: 1px solid var(--border);
+    padding: 10px 14px;
+  }
+  .btn-get-setup {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    background: var(--raised);
+    color: var(--accent2);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    width: 100%;
+  }
+  .btn-get-setup:hover { background: #1e2535; border-color: #2a4060; }
+  .btn-get-setup.open { color: var(--muted); }
+
+  .setup-expand {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 12px 14px;
+    background: var(--bg);
+  }
+  .setup-expand.show { display: block; }
+  .setup-expand textarea {
+    height: 90px;
+    font-size: 10px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    resize: none;
+    background: var(--surface);
+  }
+  .setup-expand textarea:focus { background: var(--raised); }
+  .setup-expand-footer {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    align-items: center;
+  }
+  .setup-expand-footer .btn-copy { font-size: 12px; padding: 6px 14px; }
+  .setup-type-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+
+  .no-setups {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 48px;
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 0.04em;
+  }
+
   /* ── Responsive ── */
   @media (max-width: 800px) {
     .panels { grid-template-columns: 1fr; }
     .arrow-col { flex-direction: row; padding-top: 0; padding: 12px 0; }
     header, .mode-bar, .status-bar, .details, .format-hint { margin-left: 16px; margin-right: 16px; }
     .panels { margin-left: 16px; margin-right: 16px; }
+    .page-nav { padding: 0 16px; }
+    #page-setups { padding: 20px 16px 0; }
   }
 </style>
 </head>
@@ -303,59 +453,379 @@
   </div>
 </header>
 
-<div class="mode-bar">
-  <button class="mode-btn active" id="btn-btl-to-is" onclick="setMode('btl-to-is')">Bank Tag Layouts → Inventory Setups</button>
-  <button class="mode-btn" id="btn-is-to-btl" onclick="setMode('is-to-btl')">Inventory Setups → Bank Tag Layouts</button>
-</div>
+<nav class="page-nav">
+  <button class="page-btn active" id="nav-converter" onclick="showPage('converter')">Converter</button>
+  <button class="page-btn" id="nav-setups" onclick="showPage('setups')">Recommended Setups</button>
+</nav>
 
-<div class="format-hint" id="format-hint"></div>
+<!-- ════════════════════ CONVERTER PAGE ════════════════════ -->
+<div id="page-converter">
 
-<div class="panels">
-  <div class="panel" id="panel-input">
-    <div class="panel-header">
-      <span class="panel-badge" id="badge-input">Inventory Setups</span>
-      <span class="panel-title" id="label-input">Inventory Setups Export (JSON)</span>
+  <div class="mode-bar">
+    <button class="mode-btn active" id="btn-btl-to-is" onclick="setMode('btl-to-is')">Bank Tag Layouts → Inventory Setups</button>
+    <button class="mode-btn" id="btn-is-to-btl" onclick="setMode('is-to-btl')">Inventory Setups → Bank Tag Layouts</button>
+  </div>
+
+  <div class="format-hint" id="format-hint"></div>
+
+  <div class="panels">
+    <div class="panel" id="panel-input">
+      <div class="panel-header">
+        <span class="panel-badge" id="badge-input">Inventory Setups</span>
+        <span class="panel-title" id="label-input">Inventory Setups Export (JSON)</span>
+      </div>
+      <textarea id="input-text" spellcheck="false" placeholder="Paste your exported data here..."></textarea>
+      <div class="panel-footer">
+        <button class="btn btn-secondary" onclick="document.getElementById('input-text').value=''; clearOutput()">Clear</button>
+        <button class="btn btn-secondary" onclick="pasteFromClipboard()">Paste</button>
+        <button class="btn btn-primary" onclick="convert()">Convert</button>
+      </div>
     </div>
-    <textarea id="input-text" spellcheck="false" placeholder="Paste your exported data here..."></textarea>
-    <div class="panel-footer">
-      <button class="btn btn-secondary" onclick="document.getElementById('input-text').value=''; clearOutput()">Clear</button>
-      <button class="btn btn-secondary" onclick="pasteFromClipboard()">Paste</button>
-      <button class="btn btn-primary" onclick="convert()">Convert</button>
+
+    <div class="arrow-col">
+      <button class="convert-btn" onclick="convert()" title="Convert">⇄</button>
+    </div>
+
+    <div class="panel" id="panel-output">
+      <div class="panel-header">
+        <span class="panel-badge" id="badge-output">Bank Tag Layouts</span>
+        <span class="panel-title" id="label-output">Bank Tag Layouts Import String</span>
+      </div>
+      <textarea id="output-text" spellcheck="false" readonly placeholder="Output will appear here..."></textarea>
+      <div class="panel-footer">
+        <button class="btn btn-copy" id="copy-btn" onclick="copyOutput()">Copy Output</button>
+      </div>
     </div>
   </div>
 
-  <div class="arrow-col">
-    <button class="convert-btn" onclick="convert()" title="Convert">⇄</button>
+  <div class="status-bar">
+    <div class="status-msg" id="status-msg"></div>
   </div>
 
-  <div class="panel" id="panel-output">
-    <div class="panel-header">
-      <span class="panel-badge" id="badge-output">Bank Tag Layouts</span>
-      <span class="panel-title" id="label-output">Bank Tag Layouts Import String</span>
-    </div>
-    <textarea id="output-text" spellcheck="false" readonly placeholder="Output will appear here..."></textarea>
-    <div class="panel-footer">
-      <button class="btn btn-copy" id="copy-btn" onclick="copyOutput()">Copy Output</button>
-    </div>
+  <div class="details" id="details-panel">
+    <div class="details-header">Parsed Details</div>
+    <div class="details-grid" id="details-grid"></div>
   </div>
+
 </div>
 
-<div class="status-bar">
-  <div class="status-msg" id="status-msg"></div>
-</div>
+<!-- ════════════════════ RECOMMENDED SETUPS PAGE ════════════════════ -->
+<div id="page-setups" style="display:none">
 
-<div class="details" id="details-panel">
-  <div class="details-header">Parsed Details</div>
-  <div class="details-grid" id="details-grid"></div>
+  <div class="cat-bar" id="cat-bar"></div>
+  <div class="setups-grid" id="setups-grid"></div>
+
 </div>
 
 <script>
 // ─────────────────────────────────────────────────────────────
+//  Recommended Setups Data
+//  Add new setups by adding entries to this array.
+//  Fields:
+//    name        - Display name
+//    category    - General | Bossing | Skilling | Slayer | Raiding | PvP
+//    description - Short description shown on the card
+//    type        - "is" (Inventory Setups JSON) | "btl" (Bank Tag Layouts string)
+//    data        - The actual export string to copy
+// ─────────────────────────────────────────────────────────────
+const SETUPS = [
+  // ── General ──────────────────────────────────────────────
+  {
+    name: "Questing",
+    category: "General",
+    description: "Common quest items and general gear for questing.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "Clue Scrolls",
+    category: "General",
+    description: "All clue scroll items including spades, sextant, watch, and chart.",
+    type: "is",
+    data: ""
+  },
+
+  // ── Bossing ───────────────────────────────────────────────
+  {
+    name: "Zulrah",
+    category: "Bossing",
+    description: "Full switch setup for all Zulrah rotations — mage, range, and melee phases.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "Vorkath",
+    category: "Bossing",
+    description: "Ranged Vorkath setup with Woox Walk items and special attack weapons.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "Grotesque Guardians",
+    category: "Bossing",
+    description: "Slayer tower rooftop setup for Dusk and Dawn.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "Corporeal Beast",
+    category: "Bossing",
+    description: "Corp solo or mass setup with spear and spec weapons.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "GWD — Bandos",
+    category: "Bossing",
+    description: "Bandos GWD duo/solo setup with BIS melee gear.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "GWD — Armadyl",
+    category: "Bossing",
+    description: "Armadyl GWD setup focused on ranged.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "Barrows",
+    category: "Bossing",
+    description: "Barrows run setup with prayer potions and spade.",
+    type: "is",
+    data: ""
+  },
+
+  // ── Skilling ─────────────────────────────────────────────
+  {
+    name: "Farming Run",
+    category: "Skilling",
+    description: "Complete farming run — allotments, herbs, trees, and fruit trees.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "Herblore",
+    category: "Skilling",
+    description: "Herblore setup for cleaning herbs and making potions.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "Construction",
+    category: "Skilling",
+    description: "Construction training setup with planks and hammer.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "Fishing — Infernal Harpoon",
+    category: "Skilling",
+    description: "AFK swordfish/tuna fishing with infernal harpoon.",
+    type: "is",
+    data: ""
+  },
+
+  // ── Slayer ────────────────────────────────────────────────
+  {
+    name: "Slayer — General",
+    category: "Slayer",
+    description: "General slayer setup with melee gear and switches for common tasks.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "Cerberus",
+    category: "Slayer",
+    description: "Cerberus slayer setup with prayer potions and BIS melee.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "Alchemical Hydra",
+    category: "Slayer",
+    description: "Hydra slayer setup — ranged or mage depending on style.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "Abyssal Sire",
+    category: "Slayer",
+    description: "Sire setup with ranged switches and restore potions.",
+    type: "is",
+    data: ""
+  },
+
+  // ── Raiding ───────────────────────────────────────────────
+  {
+    name: "Chambers of Xeric",
+    category: "Raiding",
+    description: "CoX raiding layout with all switches for solo or team.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "Theatre of Blood",
+    category: "Raiding",
+    description: "ToB layout with room-by-room gear switches.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "Tombs of Amascut",
+    category: "Raiding",
+    description: "ToA setup with invocation flexibility and prayer switches.",
+    type: "is",
+    data: ""
+  },
+
+  // ── PvP ───────────────────────────────────────────────────
+  {
+    name: "Tribrid NH",
+    category: "PvP",
+    description: "No honour tribrid setup for singles and multi combat.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "Bridding",
+    category: "PvP",
+    description: "Classic bridding setup for 1v1 fights.",
+    type: "is",
+    data: ""
+  },
+  {
+    name: "PvP — Rushing",
+    category: "PvP",
+    description: "Rushing setup with spec weapons and quick switch items.",
+    type: "is",
+    data: ""
+  },
+];
+
+const CATEGORIES = ["General", "Bossing", "Skilling", "Slayer", "Raiding", "PvP"];
+
+let activeCategory = "All";
+
+function buildCategoryBar() {
+  const bar = document.getElementById("cat-bar");
+  const all = ["All", ...CATEGORIES];
+  bar.innerHTML = all.map(cat =>
+    `<button class="cat-btn${cat === activeCategory ? " active" : ""}" onclick="filterCategory('${cat}')">${cat}</button>`
+  ).join("");
+}
+
+function filterCategory(cat) {
+  activeCategory = cat;
+  buildCategoryBar();
+  renderSetups();
+}
+
+function renderSetups() {
+  const grid = document.getElementById("setups-grid");
+  const filtered = activeCategory === "All"
+    ? SETUPS
+    : SETUPS.filter(s => s.category === activeCategory);
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="no-setups">No setups in this category yet.</div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((s, idx) => {
+    const id = "setup-" + SETUPS.indexOf(s);
+    const typeLabel = s.type === "btl"
+      ? "Bank Tag Layouts string"
+      : "Inventory Setups JSON";
+    const placeholder = s.data
+      ? s.data
+      : "(No setup data added yet)";
+    return `
+      <div class="setup-card" id="card-${id}">
+        <div class="setup-card-header">
+          <div class="setup-card-info">
+            <div class="setup-card-name">${s.name}</div>
+            <div class="setup-card-desc">${s.description}</div>
+          </div>
+          <span class="cat-tag cat-${s.category}">${s.category}</span>
+        </div>
+        <div class="setup-card-footer">
+          <button class="btn-get-setup" id="btn-${id}" onclick="toggleSetup('${id}')">Get Setup String</button>
+        </div>
+        <div class="setup-expand" id="expand-${id}">
+          <textarea id="ta-${id}" readonly spellcheck="false">${placeholder}</textarea>
+          <div class="setup-expand-footer">
+            <button class="btn btn-copy" id="copy-${id}" onclick="copySetup('${id}')">Copy</button>
+            <span class="setup-type-label">${typeLabel}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+function toggleSetup(id) {
+  const expand = document.getElementById("expand-" + id);
+  const btn    = document.getElementById("btn-" + id);
+  const isOpen = expand.classList.contains("show");
+
+  if (isOpen) {
+    expand.classList.remove("show");
+    btn.textContent = "Get Setup String";
+    btn.classList.remove("open");
+  } else {
+    expand.classList.add("show");
+    btn.textContent = "Hide";
+    btn.classList.add("open");
+    const ta = document.getElementById("ta-" + id);
+    ta.select();
+  }
+}
+
+function copySetup(id) {
+  const ta  = document.getElementById("ta-" + id);
+  const btn = document.getElementById("copy-" + id);
+  if (!ta.value || ta.value.startsWith("(No setup data")) return;
+
+  const markCopied = () => {
+    btn.textContent = "Copied!";
+    btn.classList.add("copied");
+    setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("copied"); }, 2000);
+  };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(ta.value).then(markCopied).catch(() => fallbackCopyEl(ta, markCopied));
+  } else {
+    fallbackCopyEl(ta, markCopied);
+  }
+}
+
+function fallbackCopyEl(ta, onSuccess) {
+  ta.removeAttribute("readonly");
+  ta.select();
+  ta.setSelectionRange(0, ta.value.length);
+  try {
+    if (document.execCommand("copy")) onSuccess();
+  } catch(e) {}
+  ta.setAttribute("readonly", "");
+  window.getSelection()?.removeAllRanges();
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Page navigation
+// ─────────────────────────────────────────────────────────────
+function showPage(page) {
+  document.getElementById("page-converter").style.display = page === "converter" ? "" : "none";
+  document.getElementById("page-setups").style.display    = page === "setups"    ? "" : "none";
+  document.getElementById("nav-converter").classList.toggle("active", page === "converter");
+  document.getElementById("nav-setups").classList.toggle("active", page === "setups");
+}
+
+// ─────────────────────────────────────────────────────────────
 //  Constants (mirrored from source)
 // ─────────────────────────────────────────────────────────────
 const BTL_PREFIX       = 'banktaglayoutsplugin:';
-const SPADE_ITEM_ID    = 952; // ItemID.SPADE from OSRS
-const WEAPON_SLOT_IDX  = 3;   // EquipmentInventorySlot.WEAPON.getSlotIdx()
+const SPADE_ITEM_ID    = 952;
+const WEAPON_SLOT_IDX  = 3;
 
 // ─────────────────────────────────────────────────────────────
 //  Mode state
@@ -402,18 +872,13 @@ function clearOutput() {
 //  Clipboard helpers
 // ─────────────────────────────────────────────────────────────
 async function pasteFromClipboard() {
-  // Try modern API first (works on HTTPS / localhost)
   if (navigator.clipboard && navigator.clipboard.readText) {
     try {
       const text = await navigator.clipboard.readText();
       document.getElementById('input-text').value = text;
       return;
-    } catch (e) {
-      // Fall through to manual prompt
-    }
+    } catch (e) {}
   }
-  // file:// fallback — clipboard read is blocked by browsers on local files,
-  // so just focus the textarea and let the user Ctrl+V directly
   const ta = document.getElementById('input-text');
   ta.focus();
   showStatus('Clipboard read is blocked on local files — press Ctrl+V to paste.', 'info');
@@ -424,14 +889,12 @@ function copyOutput() {
   if (!val) return;
 
   const btn = document.getElementById('copy-btn');
-
   const markCopied = () => {
     btn.textContent = 'Copied!';
     btn.classList.add('copied');
     setTimeout(() => { btn.textContent = 'Copy Output'; btn.classList.remove('copied'); }, 2000);
   };
 
-  // Modern API (HTTPS / localhost)
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(val).then(markCopied).catch(() => fallbackCopy(val, markCopied));
   } else {
@@ -440,7 +903,6 @@ function copyOutput() {
 }
 
 function fallbackCopy(text, onSuccess) {
-  // Select the output textarea and execCommand — works on file:// in all browsers
   const ta = document.getElementById('output-text');
   ta.removeAttribute('readonly');
   ta.select();
@@ -480,7 +942,6 @@ function showDetails(fields) {
 //  IS → BTL conversion
 // ─────────────────────────────────────────────────────────────
 function convertISToBTL(jsonStr) {
-  // Parse the portable JSON
   let portable;
   try {
     portable = JSON.parse(jsonStr.trim());
@@ -492,33 +953,21 @@ function convertISToBTL(jsonStr) {
   if (!portable.layout) throw new Error('Missing "layout" array — setup has no layout data.');
 
   const setup  = portable.setup;
-  const layout = portable.layout; // int[] — index = bank slot, value = itemId (-1 = empty)
-
+  const layout = portable.layout;
   const setupName = setup.name;
   if (!setupName) throw new Error('Setup is missing a name.');
 
-  // ── Convert int[] layout to BTL "itemId:index" CSV ──
-  // IS layout: dense array, layout[bankSlot] = itemId (-1 = empty)
-  // BTL layout: sparse, "itemId:bankSlot,itemId:bankSlot,..."
   const btlLayoutParts = [];
   for (let i = 0; i < layout.length; i++) {
-    if (layout[i] !== -1) {
-      btlLayoutParts.push(`${layout[i]}:${i}`);
-    }
+    if (layout[i] !== -1) btlLayoutParts.push(`${layout[i]}:${i}`);
   }
   const btlLayoutString = btlLayoutParts.join(',');
 
-  // ── Collect all unique item IDs for the bank tag ──
-  // We need every item that appears in inv, eq, rp, bp, qv, afi
   const tagItemIds = new Set();
-
   const collectItems = (list) => {
     if (!list) return;
-    for (const item of list) {
-      if (item && item.id > 0) tagItemIds.add(item.id);
-    }
+    for (const item of list) { if (item && item.id > 0) tagItemIds.add(item.id); }
   };
-
   collectItems(setup.inv);
   collectItems(setup.eq);
   collectItems(setup.rp);
@@ -531,32 +980,18 @@ function convertISToBTL(jsonStr) {
     }
   }
 
-  // ── Determine the icon item ID ──
-  // Priority: iId (custom icon) → weapon slot item → SPADE fallback
   let iconId = setup.iId && setup.iId > 0 ? setup.iId : -1;
-  if (iconId <= 0 && setup.eq && setup.eq[WEAPON_SLOT_IDX]) {
-    iconId = setup.eq[WEAPON_SLOT_IDX].id || -1;
-  }
+  if (iconId <= 0 && setup.eq && setup.eq[WEAPON_SLOT_IDX]) iconId = setup.eq[WEAPON_SLOT_IDX].id || -1;
   if (iconId <= 0) iconId = SPADE_ITEM_ID;
 
-  // ── Standardize the tag name (mirrors Text.standardize in RuneLite) ──
-  // RuneLite's Text.standardize: lowercase, strip leading/trailing whitespace
   const tagName = setupName.trim().toLowerCase();
-
-  // ── Build the BTL export string ──
-  // Format: banktaglayoutsplugin:<tagName>,<itemId:index,...>,banktag:<tagName>,<icon>,<item1>,<item2>,...
   let exportStr = BTL_PREFIX + tagName;
-  if (btlLayoutString.length > 0) {
-    exportStr += ',' + btlLayoutString;
-  }
+  if (btlLayoutString.length > 0) exportStr += ',' + btlLayoutString;
 
-  // banktag section: tagName, icon, then all item IDs (comma separated via toCSV)
-  // Text.toCSV in RuneLite just joins with commas (no quoting needed for item IDs)
   const tagItems = Array.from(tagItemIds);
   const bankTagParts = [tagName, String(iconId), ...tagItems.map(String)];
   exportStr += ',banktag:' + bankTagParts.join(',');
 
-  // ── Build details ──
   const details = [
     { label: 'Setup Name',    value: setupName,                  cls: 'accent'  },
     { label: 'Tag Name',      value: tagName,                    cls: 'accent2' },
@@ -582,7 +1017,6 @@ function convertBTLToIS(btlStr) {
     throw new Error(`Invalid BTL format — string must start with "${BTL_PREFIX}"`);
   }
 
-  // Split on ",banktag:" to separate layout section from bank tag section
   const banktag_sep_idx = trimmed.indexOf(',banktag:');
   if (banktag_sep_idx === -1) {
     throw new Error('Invalid BTL format — missing ",banktag:" separator. Did you copy the full string?');
@@ -591,12 +1025,10 @@ function convertBTLToIS(btlStr) {
   const layoutSection  = trimmed.substring(BTL_PREFIX.length, banktag_sep_idx);
   const banktagSection = trimmed.substring(banktag_sep_idx + ',banktag:'.length);
 
-  // Parse the name and layout from the layout section
-  // layoutSection = "tagName,itemId:index,itemId:index,..."
   const firstComma = layoutSection.indexOf(',');
   let tagName, layoutString;
   if (firstComma === -1) {
-    tagName     = layoutSection;
+    tagName      = layoutSection;
     layoutString = '';
   } else {
     tagName      = layoutSection.substring(0, firstComma);
@@ -605,7 +1037,6 @@ function convertBTLToIS(btlStr) {
 
   if (!tagName) throw new Error('Could not extract tag name from BTL string.');
 
-  // Parse BTL layout: "itemId:index,..." → Map<index, itemId>
   const btlMap = {};
   let maxIndex = -1;
   if (layoutString.length > 0) {
@@ -620,65 +1051,30 @@ function convertBTLToIS(btlStr) {
     }
   }
 
-  // Build IS int[] layout from the BTL map
-  // IS layout is a dense array: layout[bankSlot] = itemId, -1 = empty
   const isLayout = new Array(maxIndex + 1).fill(-1);
-  for (const [idx, itemId] of Object.entries(btlMap)) {
-    isLayout[parseInt(idx, 10)] = itemId;
-  }
+  for (const [idx, itemId] of Object.entries(btlMap)) isLayout[parseInt(idx, 10)] = itemId;
 
-  // Parse the bank tag section: "tagName,icon,item1,item2,..."
   const bankTagParts = banktagSection.split(',');
   if (bankTagParts.length < 2) throw new Error('Invalid banktag section — too few fields.');
 
-  const bankTagName  = bankTagParts[0]; // skip, we use tagName from layout section
-  const iconIdStr    = bankTagParts[1];
-  const iconId       = parseInt(iconIdStr, 10);
-  const tagItemIds   = bankTagParts.slice(2).map(s => parseInt(s, 10)).filter(n => !isNaN(n) && n > 0);
+  const iconId     = parseInt(bankTagParts[1], 10);
+  const tagItemIds = bankTagParts.slice(2).map(s => parseInt(s, 10)).filter(n => !isNaN(n) && n > 0);
 
-  // ── Reconstruct the InventorySetupSerializable from item IDs ──
-  // We don't have slot-assignment info from BTL (it only knows IDs, not which slot each goes in).
-  // Best we can do: fill inv from the non-layout-positioned items, leave eq/rp/etc. as empty.
-  // The layout positions carry over exactly, which is the key data.
-  //
-  // Build a minimal valid setup so IS can import it.
-  // IS requires: name, inv (28 slots), eq (14 slots), afi ({})
-  const DUMMY = null; // IS uses null for empty serializable items
-
-  // Create 28 inv slots and 14 eq slots (all null = empty)
+  const DUMMY    = null;
   const invSlots = new Array(28).fill(DUMMY);
   const eqSlots  = new Array(14).fill(DUMMY);
-
-  // Fill inv slots with tag items in order (up to 28), skipping items already in layout
-  // This gives IS enough to reconstruct item names from the ItemManager
   let invIdx = 0;
   for (const itemId of tagItemIds) {
     if (invIdx >= 28) break;
     invSlots[invIdx++] = { id: itemId };
   }
 
-  // Reconstruct the setup name: BTL stores lowercased names — preserve as-is
-  // IS will use this as-is on import
-  const setupName = tagName;
-
   const isPortable = {
     setup: {
-      inv:  invSlots,
-      eq:   eqSlots,
-      rp:   null,
-      bp:   null,
-      qv:   null,
-      afi:  {},
-      name: setupName,
-      notes: null,
-      hc:   "#FF48A4D8", // default teal (matches IS default highlight color)
-      hd:   true,         // highlight difference on
-      dc:   null,
-      fb:   true,         // filter bank on
-      uh:   true,         // unordered highlight on
-      sb:   null,
-      fv:   null,
-      iId:  iconId > 0 && iconId !== SPADE_ITEM_ID ? iconId : null,
+      inv:  invSlots, eq: eqSlots, rp: null, bp: null, qv: null, afi: {},
+      name: tagName, notes: null,
+      hc: "#FF48A4D8", hd: true, dc: null, fb: true, uh: true, sb: null, fv: null,
+      iId: iconId > 0 && iconId !== SPADE_ITEM_ID ? iconId : null,
     },
     layout: isLayout,
   };
@@ -692,8 +1088,6 @@ function convertBTLToIS(btlStr) {
     { label: 'Note',          value: 'Slot assignments reconstructed from layout positions', cls: 'accent' },
   ];
 
-  // Must be compact JSON (no newlines) — IS imports via JOptionPane.showInputDialog
-  // which uses a JTextField that truncates pasted text at the first newline character.
   return { output: JSON.stringify(isPortable), details };
 }
 
@@ -702,10 +1096,7 @@ function convertBTLToIS(btlStr) {
 // ─────────────────────────────────────────────────────────────
 function convert() {
   const input = document.getElementById('input-text').value.trim();
-  if (!input) {
-    showStatus('No input — paste your export data first.', 'error');
-    return;
-  }
+  if (!input) { showStatus('No input — paste your export data first.', 'error'); return; }
 
   try {
     let result;
@@ -714,7 +1105,6 @@ function convert() {
     } else {
       result = convertBTLToIS(input);
     }
-
     document.getElementById('output-text').value = result.output;
     showStatus('Conversion successful.', 'success');
     showDetails(result.details);
@@ -726,6 +1116,8 @@ function convert() {
 
 // Init
 setMode('btl-to-is');
+buildCategoryBar();
+renderSetups();
 </script>
 </body>
 </html>
